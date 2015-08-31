@@ -1,0 +1,59 @@
+#!/usr/bin/python
+
+#####
+##
+## The Following Agent Has Been Tested On:
+##
+##  Model       Firmware
+## +---------------------------------------------+
+##  AP7951	AOS v2.7.0, PDU APP v2.7.3
+##  AP7941      AOS v3.5.7, PDU APP v3.5.6
+##  AP9606	AOS v2.5.4, PDU APP v2.7.3
+##
+## @note: ssh is very slow on AP79XX devices protocol (1) and 
+##        cipher (des/blowfish) have to be defined
+#####
+
+import sys, re, exceptions,os,time
+
+
+#BEGIN_VERSION_GENERATION
+RELEASE_VERSION="3.0.2"
+BUILD_DATE="(built Tue Sep 22 16:23:19 UTC 2009)"
+REDHAT_COPYRIGHT="Copyright (C) Red Hat, Inc. 2004-2009 All rights reserved."
+#END_VERSION_GENERATION
+
+def main():
+	device_opt = [  "delay", "success" ]
+
+	#options = check_input(device_opt, process_input(device_opt))
+	
+	name = ""
+	args={}
+	for line in sys.stdin.readlines():
+		line = line.strip()
+		if ((line.startswith("#")) or (len(line) == 0)):
+			continue
+
+		(name, value) = (line + "=").split("=", 1)
+		value = value[:-1]
+		#print "==name==",name,"===value===",value
+
+		args[name]=value
+		
+	if not args.has_key('delay') or not args.has_key('success') :
+		print "Delay time and Success param is required...."
+		sys.exit(2)
+	#cmd = "ping -c "+args['count']+" "+args['ipaddr']	
+	#out	= os.system(cmd)
+	#print cmd,"========",out
+	delay=int(args['delay'])
+	success=int(args['success'])
+	time.sleep(delay)
+	
+	if success==0:
+		print "Requested Failure. Exiting"
+		sys.exit(2)
+		
+if __name__ == "__main__":
+	main()

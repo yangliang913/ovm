@@ -1,0 +1,900 @@
+#!/bin/bash -x
+#
+#   stackone   -  Copyright (c) 2008 stackone Corp.
+#   ======
+#
+# stackone is a Virtualization management tool with a graphical user
+# interface that allows for performing the standard set of VM operations
+# (start, stop, pause, kill, shutdown, reboot, snapshot, etc...). It
+# also attempts to simplify various aspects of VM lifecycle management.
+#
+#
+# This software is subject to the GNU General Public License, Version 2 (GPLv2)
+# and for details, please consult it at:
+#
+#    http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+# 
+#
+# author : mkelkar@users.sourceforge.net
+#
+
+# Contains utility functions for network setup
+#
+
+## returns physical interface names
+##Need to figure if should return wireless cards as well
+get_physical_interfaces()
+{
+#  IFACES=`ls -ld /sys/class/net/*/device | sed -e 's/.*\/sys\/class\/net\///' -e 's/\/device.*//' | xargs`
+#  echo $IFACES
+  (ls -d /sys/class/net/*/device 2> /dev/null) | awk -F'/' '{ print  $(NF-1) }'
+  return 0
+}
+
+get_num_physical_interfaces()
+{
+  phy_ifs=(`get_physical_interfaces`)
+  echo ${#phy_ifs[@]}
+}
+
+get_bond_interfaces()
+{
+  
+  #BOND_IFACES=`ls -ld /sys/class/net/*/bonding 2> /dev/null | sed -e 's/.*\/sys\/class\/net\///' -e 's/\/bonding.*//' | xargs`
+  #echo $BOND_IFACES
+  (ls -d /sys/class/net/*/bonding 2> /dev/null) | awk -F'/' '{ print  $(NF-1) }'
+  return 0
+}
+
+get_bond_slaves()
+{
+  bond=$1
+  BOND_SLAVES=`cat /sys/class/net/${bond}/bonding/slaves 2> /dev/null` 
+  echo $BOND_SLAVES
+  return 0
+}
+
+
+function list_bridges()
+{
+# ls -ld /sys/class/net/*/bridge | sed -e 's/.*\/sys\/class\/net\///' -e 's/\/bridge.*//'  
+  (ls -d /sys/class/net/*/bridge 2> /dev/null) | awk -F'/' '{ print  $(NF-1) }'
+}
+
+# return interfaces which are already bridged
+function get_already_bridged()
+{
+  (ls -d /sys/class/net/*/brif/* 2> /dev/null) | awk -F'/' '{ print  $NF }'
+}
+
+function bridge_exists
+{
+   bridge_name=$1
+   if [ "$1" != "" ]; then
+      for b in `list_bridges`
+      do
+        if [ "$1" == "$b" ]; then
+           return 0
+        fi
+     done
+   fi
+   return 1
+}
+
+# VLAN functions
+get_dev_for_vlan()
+{
+    vlan_id=$1
+    vlan_dev=""
+    cat /proc/net/vlan/config | sed -e 's/[ ]*//g' | awk -F'|' '{ if (NF==3) print $1,$2,$3; }' | {
+    while read line
+    do
+       dev=`echo $line | awk '{print $1}'`
+       id=`echo $line  | awk '{print $2}'`
+       p_interface=`echo $line | awk  '{print $3}'`
+       #echo "$dev,$id,$p_interface"
+       if [ "$id" == "$vlan_id" ]; then
+          echo "$dev"
+       fi
+   done
+   }
+   echo ""
+}
+
+#get device list which has vlans created on them
+get_devices_for_all_vlan()
+{
+   devs=""
+   if [ -e /proc/net/vlan/config ]; then
+      devs=`cat /proc/net/vlan/config | sed -e 's/[ ]*//g' | awk -F'|' '{ if (NF==3) print $3; }' | sort -u`
+   fi
+   echo "$devs"
+}
+
+# return ports already part of the bridge
+get_bridge_ports()
+{
+    bridge_name=$1
+    echo `ls -d /sys/class/net/$bridge_name/brif/* 2> /dev/null | awk -F '/' '{ print $NF }'`
+}
+
+# return 0 if the port is already part of the bridge
+check_port_in_bridge()
+{
+    port=$1
+    bridge_name=$2
+
+    br_ports=`get_bridge_ports $bridge_name`
+    for s in $br_ports
+    do
+      if [ "$s" = "$port" ]; then
+         return 0
+      fi
+    done
+    return 1
+}
+
+# ensure inteface is up
+ensure_up()
+{
+   interface=$1
+
+   if [ ! -d /sys/class/net/${interface} ]; then
+      echo "Error : ensure_up  : Interface  : ${interface} does not exist"
+      return 1
+   fi
+
+   if [ "down" == "`cat /sys/class/net/${interface}/operstate`" ]; then
+      ifconfig ${interface} up
+      echo "Brought ${interface} up."
+      return 0
+   else
+      echo "Interface ${interface} already up."
+      return 0
+   fi
+   return 0
+}
+
+ensure_down()
+{
+   interface=$1
+
+   if [ ! -d /sys/class/net/${interface} ]; then
+      echo "Error : ensure_down  : Interface  : ${interface} does not exist"
+      return 1
+   fi
+
+   if [ "down" == "`cat /sys/class/net/${interface}/operstate`" ]; then
+      echo "Interface ${interface} already down."
+      return 0
+   else
+      ifconfig ${interface} down
+      echo "Brought ${interface} down."
+      return 0
+   fi
+   return 0
+}
+
+
+vlan_exists()
+{
+  v_id=$1
+  v_dev=`get_dev_for_vlan $v_id`
+  if [ "$v_dev" == "" ]; then
+     return 1
+  else
+     return 0
+  fi
+}
+
+
+# Return the candidates for which bridge can be created
+# look at the bonds, and remove slaves
+# remove interfaces which are already part of the bridge
+function get_candidates_for_bridging()
+{
+  phy_ifs=`get_physical_interfaces`
+  bond_ifs=`get_bond_interfaces`
+  already_bridged=`get_already_bridged` 
+  vlan_devs=`get_devices_for_all_vlan`
+
+  for bond in $bond_ifs
+  do
+    slave_ifs=`get_bond_slaves $bond`
+    for slave in $slave_ifs
+    do
+      phy_ifs=`echo $phy_ifs | sed -e 's/'$slave'//g'`
+    done
+    if [ "$phy_ifs" == "" ]; then
+      phy_ifs=$bond
+    else
+      phy_ifs="$phy_ifs $bond"
+    fi
+  done 
+
+  # Skip the ones that have VLANs on them
+  for dev in $vlan_devs
+  do
+    phy_ifs=`echo $phy_ifs | sed -e 's/'$dev'//g'`
+  done
+
+
+  # Now you got all the candidates. 
+  # Lets find out if they are already part of the bridge or not.
+  for slave in $already_bridged
+  do
+    phy_ifs=`echo $phy_ifs | sed -e 's/'$slave'//g'`
+  done
+
+
+
+  echo $phy_ifs 
+   
+}
+
+
+#enable ip forwarding in persistent manner
+enable_ip_forward()
+{
+  echo 1 > /proc/sys/net/ipv4/ip_forward
+  for f in /proc/sys/net/ipv4/conf/*/rp_filter ; do echo 1 > $f ; done
+
+  # Make it persistent.
+  SYSCTL_CONF=/etc/sysctl.conf
+  if [ ! -e $SYSCTL_CONF ]; then
+     echo "WARNING : Could not make ip forwarding persistent. $SYSCTL_CONF not found."
+    return
+  fi
+
+  # check if sysctl.conf needs to be modified.
+  if [ `grep -c1 "^net.ipv4.ip_forward.*=.*1" ${SYSCTL_CONF}` -eq 1 ]; then
+     if [ `grep -c1 "^net.ipv4.conf.default.rp_filter.*=.*1" ${SYSCTL_CONF}` -eq 1 ]; then
+        return
+     fi
+  fi
+  # We need modification   
+  backup_ext=".orig.`date +"%Y%m%d.%H%M%S"`"
+  sed -i${backup_ext} "
+  /net.ipv4.ip_forward/ {s/^#//;s/0/1/}
+  /net.ipv4.conf.default.rp_filter/ {s/^#//;s/0/1/}
+  " ${SYSCTL_CONF}
+}
+
+function parse_field_values {
+  #echo $1 $2 $3
+  value=''
+  if [ "$1" != "" ] && [ "$2" != "" ]; then
+    #for nameValue in `echo $1 | xargs -d'|'`
+    for nameValue in `echo $1 | tr '|' ' '`
+    do
+      if echo "$nameValue" | grep $2 >/dev/null
+      then
+        value=`echo $nameValue | cut -d'=' -f2`
+      fi
+    done
+  fi
+}
+
+add_vlan() {
+    INTERFACE_NAME=$1
+    VLAN_ID=$2
+    P_BRIDGE_NAME=$3
+    P_NETWORK=$4
+    P_BRIDGE_ADDR=$5
+    NET_MASK=$6
+    INTERFACE=""
+    
+    OUT_INTERFACE=""
+    IN_INTERFACE=""
+    if [ "$INTERFACE_NAME" != "ANY" ]; then
+        OUT_INTERFACE="--out-interface $INTERFACE_NAME"
+        IN_INTERFACE="--in-interface $INTERFACE_NAME"
+    fi
+
+    # Load the 8021q module
+    output=`lsmod | grep 8021q` 
+    if [ $? != 0 ]; then
+       output=`modprobe 8021q`
+       if [ $? == 0 ]; then
+          echo "8021q module loaded successfully"
+       else
+          echo "Error loading 8021q module - ${output}"
+          return 1
+       fi
+    else
+      echo "8021q module already loaded."
+    fi 
+
+
+    if [[ (${VLAN_ID} != "") && (${VLAN_ID} != false) ]]; then
+        echo "VLAN_ID is ${VLAN_ID}"
+        vlan_exists ${VLAN_ID}
+        if [ $? == 0 ]; then
+           INTERFACE=`get_dev_for_vlan ${VLAN_ID}`
+        else
+           #echo "VLAN ${VLAN_ID} does not exist."
+           echo "Ensure base interface is up"
+	   ensure_up ${INTERFACE_NAME}
+           echo "Adding VLAN ${VLAN_ID} for interface ${INTERFACE_NAME}..."
+           vconfig add "${INTERFACE_NAME}" "${VLAN_ID}"
+           INTERFACE=`get_dev_for_vlan ${VLAN_ID}`
+        fi 
+    else
+        echo "VLAN ID is not provided."
+        INTERFACE="${INTERFACE_NAME}"
+        
+    fi
+    echo "VLAN device interface is ${INTERFACE}"
+
+    # Bring the interface up
+    output=`ifconfig "${INTERFACE}" up 2>/dev/null`
+    if [ $? != 0 ]; then
+        echo "ERROR : Could not bring up device interface ${INTERFACE}"
+        return 1
+    fi
+
+    if [ "${P_BRIDGE_NAME}" != "" ]; then
+        #check whether the bridge exists or not
+        echo "Bridge name is ${P_BRIDGE_NAME}"
+        bridge_exists ${P_BRIDGE_NAME}
+        if [ $? != 0 ]; then
+            #Adding bridge...
+            echo "Adding bridge ${P_BRIDGE_NAME}..."
+            output=`brctl addbr ${P_BRIDGE_NAME}`
+            check_function_return_value "${output} - Unable to add bridge ${P_BRIDGE_NAME}"
+        else
+            echo "Warning: Bridge ${P_BRIDGE_NAME} exists"
+        fi
+    
+#         echo "Adding IP address ${P_BRIDGE_ADDR} and netmask ${NET_MASK} to the bridge ${P_BRIDGE_NAME}"
+#         output=`ifconfig ${P_BRIDGE_NAME} ${P_BRIDGE_ADDR} netmask ${NET_MASK}`
+#         check_function_return_value "${output} - Unable to set bridge address"
+
+        # Make sure that the interface is up
+        output=`ifconfig "${P_BRIDGE_NAME}" up`
+        check_function_return_value "${output} - Unable to start the bridge interface ${P_BRDIGE_NAME}"
+ 
+  
+        #Adding interface to bridge
+        output=`ifconfig "${INTERFACE}" up 2>/dev/null`
+        if [ $? != 0 ]; then
+            echo "ERROR: Interface ${INTERFACE} does not exist."
+            return 1
+        else
+            #Interface exists
+            check_port_in_bridge "${INTERFACE}" "${P_BRIDGE_NAME}"
+            if [ $? ==  0 ]; then
+               echo "${INTERFACE} already part of bridge ${P_BRIDGE_NAME}"
+            else
+               echo "Adding interface ${INTERFACE} to bridge ${P_BRIDGE_NAME}"
+               br_add=`brctl addif "${P_BRIDGE_NAME}" "${INTERFACE}"`
+               check_function_return_value "${br_add} - Error adding ${INTERFACE} to ${P_BRDIGE_NAME}"
+            fi
+        fi
+
+        # add rules to network service
+        # Jd : Rules handled by firewall now. And only on nw_service host. Revisit if something required on all nodes
+        #add_rules "$P_BRIDGE_NAME" "$P_NETWORK" "$INTERFACE_NAME"
+        
+        # Create the ifup script for the new bridge
+        if [ -a "/dev/kvm" ]; then
+            mkdir -p /etc/kvm
+            sed  "{s/SWITCH_NAME/${P_BRIDGE_NAME}/} " < ${common_scripts}/qemubridge-ifup > /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+            chmod 744 /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+            echo "Bridge script is created with appropriate permissions."
+        fi
+
+    else
+        echo "Bridge name is blank."
+        return 1
+    fi
+}
+
+remove_vlan() {
+    INTERFACE_NAME=$1
+    VLAN_ID=$2
+    P_BRIDGE_NAME=$3
+    P_BRIDGE_ADDR=$4
+    NODE_IP_ADDRESS=$5
+    INTERFACE=""
+
+    echo "Node ip address is $NODE_IP_ADDRESS"
+    echo "Bridge ip address is $P_BRIDGE_ADDR"
+
+    if [ "$NODE_IP_ADDRESS" != "" ]; then
+        if [ "$NODE_IP_ADDRESS" == "$P_BRIDGE_ADDR" ]; then
+            echo "Bridge and Node ip addresses are same so that exiting with no operation"
+            #Reference:http://tldp.org/LDP/abs/html/exitcodes.html
+            #exit code range is 0-255
+            #So we are putting the exit code 10 to understand the meaning of script result
+            exit_code=10
+            return 1
+        fi
+    fi
+
+    echo "VLAN_ID is ${VLAN_ID}"
+    if [[ (${VLAN_ID} != "") && (${VLAN_ID} != false) ]]; then
+        INTERFACE="${INTERFACE_NAME}.${VLAN_ID}"
+    else
+        echo "VLAN ID is not provided."
+        INTERFACE="${INTERFACE_NAME}"
+    fi
+
+    #Detach interface from bridge
+    output=`ifconfig "${INTERFACE_NAME}" 2>/dev/null`
+    if [ $? == 0 ]; then
+        bridge_exists ${P_BRIDGE_NAME}
+        if [ $? == 0 ]; then
+            echo "Detaching interface ${INTERFACE_NAME} from bridge ${P_BRIDGE_NAME}..."
+            output=`brctl delif "${P_BRIDGE_NAME}" "${INTERFACE_NAME}" 2>/dev/null`
+        fi
+    fi
+
+    #Remove vlan interface here.
+    #check whether vlan interface exists or not
+    ifconfig "${INTERFACE}"
+    if [ $? == 0 ]; then
+        #Down the vlan interface...
+        echo "Getting down the VLAN interface ${INTERFACE}..."
+        ifconfig "${INTERFACE}" down
+
+        #Removing vlan interface...
+        echo "Removing VLAN interface ${INTERFACE}..."
+        vconfig rem "${INTERFACE}"
+    else
+        echo "VLAN interface ${INTERFACE} does not exists"
+    fi
+
+    #remove bridge
+    if [ "${P_BRIDGE_NAME}" != "" ]; then
+        bridge_exists ${P_BRIDGE_NAME}
+        if [ $? != 0 ]; then
+            echo "WARNING : Bridge ${P_BRIDGE_NAME} does not exist."
+        else
+            echo "Deleting bridge ${P_BRIDGE_NAME}..."
+            output=`ifconfig ${P_BRIDGE_NAME} down`
+            check_function_return_value "${output} - Unable to bring down bridge"
+        
+            output=`brctl delbr ${P_BRIDGE_NAME}`
+            check_function_return_value "${output} - Unable to delete bridge"
+        fi
+
+        # Remove the corresponding bridge script if it exists.
+        if [ -a "/dev/kvm" ]; then
+            if [ -e /etc/kvm/qemu-ifup-${P_BRIDGE_NAME} ]; then
+                rm -f /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+                echo "Bridge script is removed."
+            fi
+        fi
+    fi
+}
+
+add_rules() {
+#This function is for adding rules to network service 
+# Parameters:
+P_BRIDGE_NAME=$1
+P_NETWORK=$2
+INTERFACE_NAME=$3
+
+OUT_INTERFACE=""
+IN_INTERFACE=""
+if [ "$INTERFACE_NAME" != "ANY" ]; then
+  OUT_INTERFACE="--out-interface $INTERFACE_NAME"
+  IN_INTERFACE="--in-interface $INTERFACE_NAME"
+fi
+
+## Add isolation 
+#
+# clean up old rules
+iptables -D FORWARD  --out-interface ${P_BRIDGE_NAME}  -j REJECT --reject-with icmp-port-unreachable > /dev/null 2> /dev/null 
+iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} -j REJECT --reject-with icmp-port-unreachable  > /dev/null 2> /dev/null 
+iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} --out-interface ${P_BRIDGE_NAME}  -j ACCEPT  > /dev/null 2> /dev/null
+# add rules
+iptables -I FORWARD  --out-interface ${P_BRIDGE_NAME}  -j REJECT --reject-with icmp-port-unreachable 
+iptables -I FORWARD --in-interface ${P_BRIDGE_NAME} -j REJECT --reject-with icmp-port-unreachable 
+iptables -I FORWARD --in-interface ${P_BRIDGE_NAME} --out-interface ${P_BRIDGE_NAME}  -j ACCEPT 
+
+# Open up firewall for dhcp and bootp
+# delete if exists
+iptables -D INPUT  --protocol tcp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol udp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol tcp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol udp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+# add rules
+iptables -I INPUT  --protocol tcp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT
+iptables -I INPUT  --protocol udp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT
+iptables -I INPUT  --protocol tcp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT
+iptables -I INPUT  --protocol udp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT
+ 
+# If NAT requested, ADD forwarding and nating rules. 
+if [ "$INTERFACE_NAME" != "" ]; then
+   # reentrant : delete and add
+   # delete
+   iptables -D FORWARD ${IN_INTERFACE} --out-interface ${P_BRIDGE_NAME} --destination ${P_NETWORK} -m state --state RELATED,ESTABLISHED -j ACCEPT  > /dev/null 2> /dev/null
+   iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} ${OUT_INTERFACE} --source ${P_NETWORK} -j ACCEPT  > /dev/null 2> /dev/null
+   iptables -t nat -D POSTROUTING --source ${P_NETWORK} ${OUT_INTERFACE} -j MASQUERADE  > /dev/null 2> /dev/null
+   # Add
+   iptables -I FORWARD ${IN_INTERFACE} --out-interface ${P_BRIDGE_NAME} --destination ${P_NETWORK} -m state --state RELATED,ESTABLISHED -j ACCEPT
+   iptables -I FORWARD --in-interface ${P_BRIDGE_NAME} ${OUT_INTERFACE} --source ${P_NETWORK} -j ACCEPT
+   iptables -t nat -I POSTROUTING --source ${P_NETWORK} ${OUT_INTERFACE} -j MASQUERADE
+fi
+
+#TODO : Do we really need this here...check with MK. 
+# if we do this once in the nw_service, as well as in stackone-tool setup
+enable_ip_forward
+
+echo "Network rules are added"
+
+}
+
+manage_public_ip() {
+echo "Manage public IP..."
+PUBLIC_IP=$1
+PRIVATE_IP=$2
+PUBLIC_INTERFACE=$3
+P_BRIDGE_NAME=$4
+ADD_FLAG=$5
+
+#This function is for attching and detaching Public IP to VM.
+# The rules are setup in firewall module from python, this 
+# functions adds/removes the public ip to the public interface.
+
+# Note:This function needs to be run on network service host.
+
+if [ $ADD_FLAG == "TRUE" ]; then
+    echo "Adding IP ${PUBLIC_IP} to public interface ${PUBLIC_INTERFACE}..."
+    ip addr add ${PUBLIC_IP}  dev ${PUBLIC_INTERFACE}
+    echo "IP is added to public interface."
+else
+    echo "Removing IP ${PUBLIC_IP} from public interface ${PUBLIC_INTERFACE}..."
+    ip addr del ${PUBLIC_IP} dev ${PUBLIC_INTERFACE}
+    echo "IP is removed from public_interface"
+fi
+
+}
+
+setup_dns_service () {
+echo "Running dns service..."
+P_BRIDGE_NAME=$1
+P_NETWORK=$2
+INTERFACE_NAME=$3
+P_BRIDGE_ADDR=$4
+DHCP_START=$5
+DHCP_END=$6
+VLAN_ID=$7
+NET_MASK=$8
+
+#This function is for 
+# - running dnsmasq service per network.
+# - setting up rules.
+# - **setting up gateway. (#Do we need to setup gateway by adding route for the IP and Interface?)
+
+# Note:This function needs to be run on one of the servers in the server pool for running dnsmasq service and setting rules.
+
+#DHCP_END="static"
+echo "-----------------dhcp_end----- "$DHCP_END
+
+nw_scripts=$script_loc/../../nw/scripts
+echo "network script location is "$nw_scripts
+
+#assigning gateway here
+echo "Adding IP address ${P_BRIDGE_ADDR} and netmask ${NET_MASK} to the bridge ${P_BRIDGE_NAME}"
+output=`ifconfig ${P_BRIDGE_NAME} ${P_BRIDGE_ADDR} netmask ${NET_MASK}`
+check_function_return_value "${output} - Unable to set bridge address"
+
+#create .conf and .pid file
+echo "Bridge name is "$P_BRIDGE_NAME
+echo "Interface name is "$INTERFACE_NAME
+CONFI_FILE_NAME=/var/cache/stackone/networks/$P_BRIDGE_NAME.conf
+PID_FILE=/var/cache/stackone/networks/$P_BRIDGE_NAME.pid
+DHCP_CONFI_FILE_NAME=/var/cache/stackone/networks/${P_BRIDGE_NAME}_dhcp.conf
+
+#Jd : fixing creating empty file. added -n and changed >> to >
+echo -n "" >> ${DHCP_CONFI_FILE_NAME}
+echo "dhcp host file created"
+chmod 755 ${DHCP_CONFI_FILE_NAME}
+
+cp $nw_scripts/dnsmasq.conf $CONFI_FILE_NAME
+echo "conf file created"
+chmod 755 ${CONFI_FILE_NAME}
+
+#Create interface name
+# INTERFACE_NAME="$INTERFACE_NAME.$VLAN_ID"
+# echo "Interface name using vlan id is "$INTERFACE_NAME
+
+# check if address is already bounded then no need to issue this command
+# is_running=`ps -ef | grep "listen-address[ ]*${P_BRIDGE_ADDR}" | grep -c1 dns`
+
+# if [ $is_running -ne 1 ]; then
+#     sleep 2  # required, else dnamasq gives some weired error for binding on ipv6
+
+    #call the dnsmasq service for each network with conf file parameter
+    #"infinite" literal is for infinite lease
+#     output=`dnsmasq --strict-order --bind-interfaces --pid-file="${PID_FILE}" --conf-file="${CONFI_FILE_NAME}" --interface ${P_BRIDGE_NAME} --listen-address ${P_BRIDGE_ADDR} --except-interface lo --dhcp-leasefile=/var/cache/stackone/networks/$P_BRIDGE_NAME.leases --dhcp-range=$DHCP_START,$DHCP_END,"infinite"`
+#     echo "dnsmasq service started"
+#     check_function_return_value "${output} - Unable to start dhcp server for virtual netowrk."
+# fi
+
+#call dnsmasq service : Jd: changed the sequece to catch the return value correctly
+output=`dnsmasq --strict-order --bind-interfaces --pid-file=${PID_FILE} --dhcp-hostsfile=${DHCP_CONFI_FILE_NAME} --conf-file=${CONFI_FILE_NAME} --interface ${P_BRIDGE_NAME} --listen-address ${P_BRIDGE_ADDR} --except-interface lo --dhcp-leasefile=/var/cache/stackone/networks/$P_BRIDGE_NAME.leases --dhcp-range=$DHCP_START,$DHCP_END,"infinite"`
+
+check_function_return_value "${output} - Unable to start dhcp server for virtual netowrk."
+echo "dnsmasq service started"
+
+
+# add rules to network service
+# Jd: In DNS service this is not required. Probably cut-paste Commenting it.
+#add_rules "$P_BRIDGE_NAME" "$P_NETWORK" "$INTERFACE_NAME"
+
+# Jd : Removed bridge script creation from here. As not part of dns service.
+
+}
+
+
+### 
+# Private bridge with NATing option functions
+###
+
+setup_privatenw () {
+P_BRIDGE_NAME=$1
+P_NETWORK=$2
+P_BRIDGE_ADDR=$3
+DHCP_START=$4
+DHCP_END=$5
+NET_MASK=$6
+GATEWAY=$7
+OUT_INTERFACE=""
+IN_INTERFACE=""
+if [ "$8" != "ANY" ]; then
+  OUT_INTERFACE="--out-interface $8"
+  IN_INTERFACE="--in-interface $8"
+fi
+INTERFACE_NAME=$8
+LOGFILE_NAME=$9
+VLAN_ID=$10
+
+if [ "$LOGFILE_NAME" != "" ]; then
+    if [ "$DHCP_START" == "NONE" ] && [ "$DHCP_END" == "NONE" ]; then
+        echo $P_BRIDGE_NAME $P_NETWORK $P_BRIDGE_ADDR $NET_MASK $IN_INTERFACE $OUT_INTERFACE >> $LOGFILE_NAME
+    else
+        echo $P_BRIDGE_NAME $P_NETWORK $P_BRIDGE_ADDR $DHCP_START $DHCP_END $NET_MASK $IN_INTERFACE $OUT_INTERFACE >> $LOGFILE_NAME
+    fi
+fi
+
+#/var/cache/stackone/networks/ directory does not exist then create it.
+if [ ! -d "/var/cache/stackone/networks/" ]; then
+    mkdir -p /var/cache/stackone/networks/
+fi
+
+#add vlan interface
+if [ "${INTERFACE_NAME}" != "" ]; then
+    add_vlan "$INTERFACE_NAME" "$VLAN_ID" "$P_BRIDGE_NAME" "$P_NETWORK" "$P_BRIDGE_ADDR" "$NET_MASK"
+fi
+
+bridge_exists ${P_BRIDGE_NAME}
+if [ $? != 0 ]; then
+   output=`brctl addbr ${P_BRIDGE_NAME}`
+   check_function_return_value "${output} - Unable to add bridge"
+else
+   echo "Warning bridge ${P_BRIDGE_NAME} exists"
+fi
+
+echo "Adding IP address ${P_BRIDGE_ADDR} and netmask ${NET_MASK} to the bridge ${P_BRIDGE_NAME}"
+output=`ifconfig ${P_BRIDGE_NAME} ${P_BRIDGE_ADDR} netmask ${NET_MASK}`
+check_function_return_value "${output} - Unable to set bridge address"
+
+# check if address is already bounded then no need to issue this command
+# is_running=`ps -ef | grep "listen-address[ ]*${P_BRIDGE_ADDR}" | grep -c1 dns`
+
+# if [ $is_running -ne 1 ]; then
+#   sleep 2  # required, else dnamasq gives some weired error for binding on ipv6
+    #if DHCP is not provided then do not call DHCP service
+#     if [ "$DHCP_START" != "NONE" ] && [ "$DHCP_END" != "NONE" ]; then
+#         output=`dnsmasq --strict-order --bind-interfaces --pid-file --conf-file --interface ${P_BRIDGE_NAME} --listen-address ${P_BRIDGE_ADDR} --except-interface lo --dhcp-leasefile=/var/cache/stackone/networks/$P_BRIDGE_NAME.leases --dhcp-range=$DHCP_START,$DHCP_END`
+#     fi
+
+    
+#   check_function_return_value "${output} - Unable to start dhcp server for virtual netowrk."
+# fi
+
+
+#call dnsmasq service
+if [ "$DHCP_START" != "NONE" ] && [ "$DHCP_END" != "NONE" ]; then
+   setup_dns_service "${P_BRIDGE_NAME}" "${P_NETWORK}" "${INTERFACE_NAME}" "${P_BRIDGE_ADDR}" "${DHCP_START}" "${DHCP_END}" "${VLAN_ID}" "${NET_MASK}"
+fi
+
+# add rules to network
+# Jd: enabling it again. As this is for host private network only.
+add_rules "$P_BRIDGE_NAME" "$P_NETWORK" "$INTERFACE_NAME"
+
+# Create the ifup script for the new bridge
+if [ -a "/dev/kvm" ]; then
+  mkdir -p /etc/kvm
+  sed  "{s/SWITCH_NAME/${P_BRIDGE_NAME}/} " < ${common_scripts}/qemubridge-ifup > /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+  chmod 744 /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+fi
+
+return 0
+} 
+
+
+remove_privatenw () {
+P_BRIDGE_NAME=$1
+P_NETWORK=$2
+P_BRIDGE_ADDR=$3
+DHCP_START=$4
+DHCP_END=$5
+NET_MASK=$6
+GATEWAY=$7
+OUT_INTERFACE=""
+IN_INTERFACE=""
+if [ "$8" != "ANY" ]; then
+  OUT_INTERFACE="--out-interface $8"
+  IN_INTERFACE="--in-interface $8"
+fi
+INTERFACE_NAME=$8
+LOGFILE_NAME=$9
+VLAN_ID=${10}
+NODE_IP_ADDRESS=${11}
+
+echo "Node ip address is $NODE_IP_ADDRESS"
+echo "Bridge ip address is $P_BRIDGE_ADDR"
+
+if [ "$NODE_IP_ADDRESS" != "" ]; then
+    if [ "$NODE_IP_ADDRESS" == "$P_BRIDGE_ADDR" ]; then
+        echo "Bridge and Node ip addresses are same so that exiting with no operation"
+        #Reference:http://tldp.org/LDP/abs/html/exitcodes.html
+        #exit code range is 0-255
+        #So we are putting the exit code 10 to understand the meaning of script result
+        exit_code=10
+        return 1
+    fi
+fi
+
+if [ "$LOGFILE_NAME" != "" ]; then
+    if [ "$DHCP_START" == "NONE" ] && [ "$DHCP_END" == "NONE" ]; then
+        echo $P_BRIDGE_NAME $P_NETWORK $P_BRIDGE_ADDR $NET_MASK $IN_INTERFACE $OUT_INTERFACE >> $LOGFILE_NAME
+    else
+        echo $P_BRIDGE_NAME $P_NETWORK $P_BRIDGE_ADDR $DHCP_START $DHCP_END $NET_MASK $IN_INTERFACE $OUT_INTERFACE >> $LOGFILE_NAME
+    fi
+fi
+
+#remove vlan interface
+remove_vlan "$INTERFACE_NAME" "$VLAN_ID" "$P_BRIDGE_NAME" "$P_BRIDGE_ADDR" "$NODE_IP_ADDRESS"
+
+bridge_exists ${P_BRIDGE_NAME}
+if [ $? != 0 ]; then
+   echo "WARNING : Bridge ${P_BRIDGE_NAME} does not exist."
+else
+   output=`ifconfig ${P_BRIDGE_NAME} down`
+   check_function_return_value "${output} - Unable to bring down bridge"
+
+   output=`brctl delbr ${P_BRIDGE_NAME}`
+   check_function_return_value "${output} - Unable to delete bridge"
+fi
+
+
+# check if address is already bounded then no need to issue this command
+process_id=`ps -ef | grep "listen-address[ ]*${P_BRIDGE_ADDR}" | grep -v "grep" | awk '{print $2}'`
+
+if [ "${process_id}" != "" ]; then
+  kill -9 ${process_id}
+fi
+
+iptables -D INPUT  --protocol tcp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol udp --destination-port 53 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol tcp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+iptables -D INPUT  --protocol udp --destination-port 67 --in-interface ${P_BRIDGE_NAME}  --jump ACCEPT > /dev/null 2>/dev/null
+
+# If NAT requested, remove forwarding and nating rules. 
+if [ "$INTERFACE_NAME" != "" ]; then
+    iptables -D FORWARD ${IN_INTERFACE} --out-interface ${P_BRIDGE_NAME} --destination ${P_NETWORK} -m state --state RELATED,ESTABLISHED -j ACCEPT > /dev/null 2> /dev/null
+    iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} ${OUT_INTERFACE} --source ${P_NETWORK} -j ACCEPT > /dev/null 2> /dev/null
+    iptables -t nat -D POSTROUTING --source ${P_NETWORK} ${OUT_INTERFACE} -j MASQUERADE > /dev/null 2> /dev/null
+fi
+# remove isolation rules.
+iptables -D FORWARD  --out-interface ${P_BRIDGE_NAME}  -j REJECT --reject-with icmp-port-unreachable > /dev/null 2> /dev/null
+iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} -j REJECT --reject-with icmp-port-unreachable > /dev/null 2> /dev/null
+iptables -D FORWARD --in-interface ${P_BRIDGE_NAME} --out-interface ${P_BRIDGE_NAME}  -j ACCEPT  > /dev/null 2> /dev/null
+
+# Remove the corresponding bridge script if it exists.
+if [ -a "/dev/kvm" ]; then
+  if [ -e /etc/kvm/qemu-ifup-${P_BRIDGE_NAME} ]; then
+     rm -f /etc/kvm/qemu-ifup-${P_BRIDGE_NAME}
+  fi
+fi
+
+#Remove lease file
+rm -f /var/cache/stackone/networks/$P_BRIDGE_NAME.leases 
+
+return 0 # return success
+} 
+
+
+###
+# Bridge setup for physical interface
+###
+
+create_xen_custom_script() { 
+  XEN_CUSTOM_FILE=stackone-xen-multibridge
+  xen_version=$1
+  PHY_IFACES=`get_candidates_for_bridging`
+  #cp "${XEN_CUSTOM_FILE}".orig  "${XEN_CUSTOM_FILE}"
+  create_template "${XEN_CUSTOM_FILE}"
+  for iface in $PHY_IFACES
+  do 
+    index=`echo $iface | sed 's/^[^0-9]*//'`
+    bridgeName=xenbr${index}
+    if [ ${xen_version} == "3.2" ]; then
+      bridgeName=${iface}
+    fi
+    echo '"$dir/network-bridge" "$@" vifnum='${index}' netdev='${iface}' bridge='${bridgeName} >> ${XEN_CUSTOM_FILE}
+  done
+  mv ${XEN_CUSTOM_FILE} /etc/xen/scripts
+  chmod u+x /etc/xen/scripts/${XEN_CUSTOM_FILE}
+}
+
+# Update /etc/sysctl.conf with rules to skip firewall for bridge traffic.
+update_sysctl()
+{
+   SYSCTL_CONF=/etc/sysctl.conf
+   SYSCTL=sysctl
+
+   if [ `grep -c '^net.bridge.bridge-nf-call-.*tables.*0' $SYSCTL_CONF` -lt 3 ]; then
+      echo "Adding required net.bridge.bridge-nf-calls settings to $SYSCTL_CONF." 
+      cat >> $SYSCTL_CONF <<EOF
+
+# Added by stackone-tool :Skip firewall for bridge traffic
+net.bridge.bridge-nf-call-ip6tables = 0
+net.bridge.bridge-nf-call-iptables = 0
+net.bridge.bridge-nf-call-arptables = 0
+
+EOF
+$SYSCTL -p $SYSCTL_CONF
+   else
+      echo "Required net.bridge.bridge-nf-calls already present in $SYSCTL_CONF."
+   fi
+
+}
+
+setup_public_bridge_for_kvm() { 
+  echo "Public bridge setup not implemented for this Linux Distribution."
+  echo "Please do public bridge setup as per KVM documentation".
+}
+
+setup_bridge_scripts_for_kvm() {
+     for bridgeName in `list_bridges`
+     do
+       mkdir -p /etc/kvm
+       sed  "{s/SWITCH_NAME/$bridgeName/} " < ${common_scripts}/qemubridge-ifup > /etc/kvm/qemu-ifup-${bridgeName}
+       chmod 744 /etc/kvm/qemu-ifup-${bridgeName}
+    done
+}
+
+create_template(){
+
+cat <<EOF > $1
+#!/bin/bash
+#
+#   stackone   -  Copyright (c) 2008 stackone Corp.
+#   ======
+#
+# stackone is a Virtualization management tool with a graphical user
+# interface that allows for performing the standard set of VM operations
+# (start, stop, pause, kill, shutdown, reboot, snapshot, etc...). It
+# also attempts to simplify various aspects of VM lifecycle management.
+#
+#
+# This software is subject to the GNU General Public License, Version 2 (GPLv2)
+# and for details, please consult it at:
+#
+#    http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+# 
+#
+# author : mk <mk@users.sourceforge.net>
+# network-xen-multi-bridge
+#
+EOF
+echo 'dir=$(dirname "$0")' >> $1
+}
+

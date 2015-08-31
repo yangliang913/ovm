@@ -1,0 +1,4 @@
+recursive-include stackone/public *
+include stackone/public/favicon.ico
+recursive-include stackone/i18n *
+recursive-include stackone/templates *

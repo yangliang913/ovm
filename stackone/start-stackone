@@ -1,0 +1,45 @@
+#!/bin/bash
+
+
+INSTALL_DIR=/home/stackone
+
+ssh_default=$INSTALL_DIR"/.ssh/cms_id_rsa"
+ssh_file=$ssh_default
+ssh_file=~/.ssh/cms_id_rsa
+
+if [ -e $ssh_file ]; then
+    echo "Using " $ssh_file
+    # checks ssh-agent set or not
+    if [ -z $SSH_AGENT_PID ]; then
+        eval `ssh-agent`
+    fi
+    ssh_res=$(ssh-add -l | grep ${ssh_file})
+    if [ $? == 1 ]; then
+        ssh-add $ssh_file
+        if [ $? != 0 ]; then
+           echo "Failed to add identity to the agent. Key based Authentication may not work."
+        else
+           echo "ssh key added to agent."
+        fi
+    fi
+else 
+    if [ -e ~/.ssh/cms_id_rsa ]; then
+       echo "ssh identity for stackone exits."
+    else
+       echo "Generting ssh identity for stackone."
+       #mkdir -p ~/.ssh/
+       #ssh-keygen -t rsa -f ~/.ssh/cms_id_rsa
+       ssh-keygen -t rsa -P '' -f ~/.ssh/cms_id_rsa
+       chmod 0600 ~/.ssh/cms_id_rsa
+    fi
+
+#    echo "$ssh_file not found, Key based Authentication will not be used."
+fi
+
+python -c 'import sys; print "Default character encoding is",sys.getdefaultencoding()'
+
+rm -rf data/sessions
+source env/bin/activate
+paster serve development.ini --daemon
+
+

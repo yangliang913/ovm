@@ -1,0 +1,124 @@
+2015-08-28 22:20:33,328 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:20:33,344 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:20:33,353 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:20:33,369 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:20:33,369 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:20:33,372 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:20:33,372 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:21:33,398 DEBUG [stackone.viewModel] [tasks.py]:447 entered in excec task for CollectMetricsForNodes task
+2015-08-28 22:21:33,404 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:21:33,416 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:21:33,446 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:21:33,446 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:21:33,454 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:21:33,454 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:21:33,458 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:22:33,479 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:22:33,488 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:22:33,496 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:22:33,511 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:22:33,518 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:22:33,519 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:22:33,530 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:22:33,530 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:23:33,553 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:23:33,559 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:23:33,572 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:23:33,583 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:23:33,583 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:23:33,588 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:23:33,588 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:24:33,614 DEBUG [stackone.viewModel] [tasks.py]:447 entered in excec task for CollectMetricsForNodes task
+2015-08-28 22:24:33,623 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:24:33,634 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:24:33,644 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:24:33,663 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:24:33,678 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:24:33,678 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:24:33,682 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:24:33,682 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:25:33,711 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:25:33,728 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:25:33,730 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:25:33,742 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:25:33,742 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:25:33,758 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:25:33,759 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:26:33,773 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:26:33,783 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:26:33,792 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:26:33,803 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:26:33,820 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:26:33,821 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:26:33,826 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:26:33,826 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:26:36,223 DEBUG [stackone.viewModel] [Userinfo.py]:1751 get_tasks query start : 2015-08-28 22:26:36.223897
+2015-08-28 22:26:36,232 DEBUG [stackone.viewModel] [Userinfo.py]:1756 get_tasks query end   : 2015-08-28 22:26:36.232489
+2015-08-28 22:26:36,244 DEBUG [stackone.viewModel] [Userinfo.py]:1921 start format_task_result_details : 2015-08-28 22:26:36.244917
+2015-08-28 22:26:36,245 DEBUG [stackone.viewModel] [Userinfo.py]:1942 end   format_task_result_details : 2015-08-28 22:26:36.245185
+2015-08-28 22:26:36,409 ERROR [stackone.model] [UpdateManager.py]:152 Deployment table is not set.Update can not proceed.
+2015-08-28 22:27:24,853 DEBUG [stackone.viewModel] [TaskCreator.py]:1111 Delete Template Task Submitted
+2015-08-28 22:27:24,905 ERROR [stackone.viewModel] [ImageService.py]:226 
+global name TemplateContextRelation is not defined
+2015-08-28 22:27:24,906 ERROR [stackone.services.model] [services.py]:351 {success: false,msg: '
+global name TemplateContextRelation is not defined'}
+Traceback (most recent call last):
+  File "/home/stackone/stackone/stackone/model/services.py", line 277, in do_work
+    raw_result = self.exec_task(auth, self.context, *args, **kw)
+  File "/home/stackone/stackone/stackone/core/services/tasks.py", line 1670, in exec_task
+    msg = image_service.remove_image(auth, image_id, group_id)
+  File "/home/stackone/stackone/stackone/viewModel/ImageService.py", line 227, in remove_image
+    raise Exception("{success: false,msg: '" + to_str(ex).replace("'", '') + "'}")
+Exception: {success: false,msg: '
+global name TemplateContextRelation is not defined'}
+2015-08-28 22:27:26,368 DEBUG [stackone.viewModel] [Userinfo.py]:1762 get_task_details query start : 2015-08-28 22:27:26.368688
+2015-08-28 22:27:26,374 DEBUG [stackone.viewModel] [Userinfo.py]:1764 get_task_details query end   : 2015-08-28 22:27:26.374183
+2015-08-28 22:27:26,377 DEBUG [stackone.viewModel] [Userinfo.py]:1882 start format_task_details : 2015-08-28 22:27:26.377091
+2015-08-28 22:27:26,377 DEBUG [stackone.viewModel] [Userinfo.py]:1906 end   format_task_details : 2015-08-28 22:27:26.377387
+2015-08-28 22:27:33,857 DEBUG [stackone.viewModel] [tasks.py]:447 entered in excec task for CollectMetricsForNodes task
+2015-08-28 22:27:33,864 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:27:33,874 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:27:33,888 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:27:33,908 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:27:33,908 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:27:33,914 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:27:33,915 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:28:33,939 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:28:33,947 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:28:33,961 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:28:33,971 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:28:33,981 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:28:33,981 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:28:33,996 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:28:33,996 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:29:34,014 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:29:34,025 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:29:34,044 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:29:34,044 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:29:34,045 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:29:34,064 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:29:34,064 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:30:34,078 DEBUG [stackone.viewModel] [tasks.py]:447 entered in excec task for CollectMetricsForNodes task
+2015-08-28 22:30:34,090 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:30:34,100 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:30:34,114 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:30:34,128 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:30:34,143 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:30:34,143 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:30:34,160 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:30:34,160 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:31:34,176 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:31:34,183 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:31:34,193 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:31:34,209 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:31:34,209 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:31:34,215 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:31:34,215 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:32:34,294 DEBUG [stackone.viewModel] [tasks.py]:1102 entered in excec task E-mail sending task
+2015-08-28 22:32:34,302 DEBUG [stackone.viewModel] [tasks.py]:825 node availability task is running
+2015-08-28 22:32:34,312 DEBUG [stackone.viewModel] [tasks.py]:916 vm availability task is running
+2015-08-28 22:32:34,323 DEBUG [stackone.viewModel] [tasks.py]:1389 entered in exec_task for notification entry task
+2015-08-28 22:32:34,333 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:32:34,333 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK
+2015-08-28 22:32:34,347 DEBUG [stackone.model] [AvailabilityWorker.py]:105 Node NodesAvailability pend_nodeids===[]
+2015-08-28 22:32:34,347 DEBUG [stackone.model] [AvailabilityWorker.py]:39 Node NodesAvailability GET WORK

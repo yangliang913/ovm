@@ -1,0 +1,5 @@
+# defaults for vmw platform
+
+defaults = { 'auto_discover': True
+         }
+

@@ -1,0 +1,65 @@
+/** 
+ * This rule will make the navbar go to the top left corner of the viewport,
+ * even if it's not the first item in the source order of the markup. 
+ */
+#head-menu-bar {
+  position: absolute;
+  top: 0;
+  left:200px;
+  float:left;
+ /* background: #f9f9f9;*/
+ 	background:none;
+}
+/* Reset default unordered list display style to remove bulleting/spacing */
+#head-menu-bar ul {
+  list-style: none;
+  margin: 0;
+ /* padding: .3em;*/
+}
+/* Stack LI elements horizontally instead of the default vertical orientation */
+#head-menu-bar li {
+  float: left;
+  margin-right: 10px;
+  font-size: 12px;
+}
+/* Turns the links into larger clickable boxes */
+#head-menu-bar li a {
+  display: block;
+  padding: .5em;
+  color: #1777B1;
+}
+
+#head-menu-bar li a {
+	text-decoration:none;
+}
+
+#head-menu-bar li a:link {
+	text-decoration:none;
+}
+
+#head-menu-bar li a:visited {
+	text-decoration:none;
+}
+
+/* Pseudo selector used for a usability aid, so you know when you can click 
+#head-menu-bar li a:hover {
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+}*/
+
+#head-menu-bar li a:hover {
+  text-decoration: none;
+  border: solid 1px #4F4F4F;
+  background-color:#e4ecf4;
+}
+
+#headerPanel {
+	padding-top: 1px;
+	/*background: #BDD7EF !important;*/
+	/*border-bottom: 1px solid #8DB2E3;*/
+}
+
+#ext-gen21 {
+	background:white !important;
+}

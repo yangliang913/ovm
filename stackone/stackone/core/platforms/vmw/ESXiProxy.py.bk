@@ -1,0 +1,519 @@
+from psphere.client import Client
+from psphere.errors import ObjectNotFoundError
+from exception import VCenterDownError
+from psphere.managedobjects import HostSystem, VirtualMachine, Datacenter, ClusterComputeResource, Folder
+from stackone.core.utils.utils import to_unicode, to_str, dynamic_map
+from stackone.model.VM import DiskEntry
+import stackone.core.utils.constants as constants
+import VMWConstants as vmwconstants
+import traceback
+import os
+import threading
+import urllib2
+import logging
+from stackone.core.utils.thread_context import get_subsystem_context
+LOGGER = logging.getLogger('stackone.core.platforms.vmw')
+class ESXiNode():
+    UP = constants.VMW_UP
+    DOWN = constants.VMW_DOWN
+    UNKNOWN = constants.VMW_UNKNOWN
+    DEFAULT_USER = 'root'
+    default_bash_timeout = None
+    bash_dir = None
+    local_bash_dir = None
+    def __init__(self, external_manager=None, hostname=None, ssh_port=22, username=DEFAULT_USER, password=None, isRemote=False, use_keys=False):
+        self.external_manager = external_manager
+        self.isRemote = isRemote
+        self.hostname = hostname
+        self.ssh_port = ssh_port
+        self.username = username
+        self.password = password
+        self.use_keys = use_keys
+        self.ssh_transport = None
+        self._last_error = None
+        self._hs = None
+        self.client = self.get_connection()
+        return None
+
+    def get_connection(self):
+        print 'AAAA Creating ESXi Client Connection to ',
+        print self.hostname
+        try:
+            conn = Client(server=self.hostname, username=self.username, password=self.password)
+        except Exception as ex:
+            traceback.print_stack()
+            print 'Failed to connect to ESXi Host %s' % self.hostname
+            raise ex
+        print 'AAAA DONE Creating ESXi Client Connection to ',
+        print self.hostname
+        return conn
+
+    def set_last_error(self, ex):
+        print 'ERROR : set last error Called.',
+        print ex
+        self._last_error = ex
+
+    def get_last_error(self):
+        return self._last_error
+
+    def cleanup(self):
+        if self.client:
+            print 'AAAA : Logging out of ESXi ',
+            print self.hostname
+            self.client.logout()
+            print 'AAAA : DONE Logging out of ESXi ',
+            print self.hostname
+
+    def open(self, *args, **kw):
+        raise Exception('open : Not supported for ESXi')
+
+    def get_dir_entries(self, dir):
+        return []
+        raise Exception('get_dir_entries: Not implemented for ESXi')
+
+    def exec_cmd(self, cmd, exec_path=None, timeout=-1, params=None, cd=False, env=None):
+        raise Exception('exec_cmd : Not implemented for ESXi')
+
+    def file_exists(self, filename):
+        try:
+            raise Exception('file_exists : Not implemented for ESXi')
+        except:
+            traceback.print_stack()
+            raise
+
+    def file_is_writable(self, filename):
+        raise Exception('file_is_writable : Not implemented for ESXi')
+
+    def put(self, local, remote):
+        raise Exception('put : Not implemented for ESXi')
+
+    def get(self, remote, local):
+        raise Exception('get : Not implemented for ESXi')
+
+    def get_hs(self):
+        if self._hs is None:
+            self._hs = HostSystem.all(self.client)[0]
+        if self._hs is None:
+            raise Exception('ESXiNode Could not get host system!')
+        return self._hs
+
+    def get_hardware_summary(self):
+        return self.get_hs().summary.hardware
+
+    def get_config_summary(self):
+        return self.get_hs().summary.config
+
+    def get_config_filesystemvolume_mountinfo(self):
+        return self.get_hs().config.fileSystemVolume.mountInfo
+
+    def get_config_network(self):
+        return self.get_hs().config.network
+
+    def get_networks(self):
+        return self.get_hs().network
+
+    def get_storage_device_scsiLun(self):
+        return self.get_hs().configManager.storageSystem.storageDeviceInfo.scsiLun
+
+    def get_datastores(self):
+        return self.get_hs().datastore
+
+    def get_quick_stats_summary(self):
+        return self.get_hs().summary.quickStats
+
+    def update_vms(self):
+        hs = self.get_hs()
+        hs.update(properties=['vm'])
+
+    def update_host_properties(self, properties=None):
+        hs = self.get_hs()
+        self.update_properties(hs, properties)
+
+    def update_properties(self, mob, properties=None):
+        if not properties:
+            properties = 'all'
+        mob.update(properties=properties)
+#####################
+    def get_vm(self, name):
+        hs = self.get_hs()
+        print 'ESXIProxy get_vm vm:%s, host:%s, class:%s' % (name, hs.name, self.__class__.__name__)
+        try:
+            vm =  self.client.find_entity_view('VirtualMachine', begin_entity=hs, filter={'name': name})
+            return vm
+        except ObjectNotFoundError, ex:
+            print 'DEBUG----get_vm---hs.vm-------',
+            print hs,
+            print hs.name,
+            traceback.print_stack()
+            raise ObjectNotFoundError('Could not find VirtualMachine:%s on Host:%s. %s' % (name,hs.name,to_str(ex)))
+        
+
+
+    def create(self, type, **kwargs):
+        return self.client.create(type, **kwargs)
+
+    def get_vm_list(self):
+        vms = []
+        hs = self.get_hs()
+        print 'ESXIProxy get_vm_list host:%s, class:%s' % (hs.name, self.__class__.__name__)
+        for vm in hs.vm:
+            print 'VM:-->',
+            print vm.name
+            try:
+                if not vm.config.template and not self.is_orphaned_vm(vm):
+                    vms.append(vm.name)
+            except AttributeError as ex:   
+                print 'DEBUG---get_vm_list----hs.vm-------',
+                print hs,
+                print hs.name,
+                msg = 'ERROR: VM:%s, %s' %(vm.name,to_str(ex))
+                print msg
+                LOGGER.error(msg)
+                traceback.print_stack()
+                 continue
+    
+        return vms
+
+
+    def is_orphaned_vm(self, vm_mob):
+        if vm_mob.runtime.connectionState in [vmwconstants.ORPHANED]:
+            msg = 'Discarded VM:%s, State:%s' % (vm_mob.name, vm_mob.runtime.connectionState)
+            LOGGER.info(msg)
+            print msg
+            return True
+        return False
+
+    def get_vm_mob_list(self):
+        vms = []
+        hs = self.get_hs()
+        print 'ESXIProxy get_vm_mob_list host:%s, class:%s' % (hs.name, self.__class__.__name__)
+        for vm in hs.vm:
+            print 'VM:-->',
+            print vm.name
+            try:
+                if not vm.config.template and not self.is_orphaned_vm(vm):
+                    vms.append(vm)
+                    continue
+            except AttributeError as ex:
+                print 'DEBUG---get_vm_mob_list----hs.vm-------',
+                print hs,
+                print hs.name,
+                msg = 'ERROR: VM:%s, %s' %(vm.name,to_str(ex))
+                print msg
+                LOGGER.error(msg)
+                traceback.print_stack()
+                continue
+        return vms
+
+    def get_template_list(self):
+        vms = []
+        hs = self.get_hs()
+        print 'ESXIProxy get_template_list host:%s, class:%s' % (hs.name, self.__class__.__name__)
+        for vm in hs.vm:
+            print 'VM:-->',
+            print vm.name
+            try:
+                if vm.config.template:
+                    vms.append(vm)
+            except AttributeError as ex:
+                print 'DEBUG---get_template_list----hs.vm-------',
+                print hs,
+                print hs.name,
+                msg = 'ERROR: VM:%s, %s' %(vm.name,to_str(ex))
+                print msg
+                LOGGER.error(msg)
+                traceback.print_stack()
+                continue
+        return vms
+
+
+    def get_datastore_browser(self):
+        dsb = self._hs.datastoreBrowser
+        return dsb
+
+    def search_datastore_task(self, datastore_path, match_pattern, file_type=True, file_size=True, modification=True, file_owner=True, search_caseI_insensitive=False, sort_folders_first=True, query=None):
+        dsb = self.get_datastore_browser()
+        mor = dsb.SearchDatastore_Task(datastorePath=datastore_path, searchSpec={'matchPattern': match_pattern, 'details': {'fileType': file_type, 'fileSize': file_size, 'modification': modification, 'fileOwner': file_owner}, 'searchCaseInsensitive': search_caseI_insensitive, 'sortFoldersFirst': sort_folders_first, 'query': query})
+        return mor
+
+    def get_disk_size(self, datastore_path, disk_name):
+        try:
+            size = 0
+            mor = self.search_datastore_task(datastore_path=datastore_path, match_pattern=disk_name)
+            info = mor.info
+            while info.state not in ('success', 'error'):
+                msg = 'get_disk_size: datastore_path:%s, disk_name:%s, state:%s' % (datastore_path, disk_name, info.state)
+                print msg
+                mor.update(properties=['info'])
+                info = mor.info
+            if info.state in ('error',):
+                msg = 'Error: Can not get disk size, datastore_path:%s, disk_name:%s' % (datastore_path, disk_name)
+                msg += ', %s' % info.task.info.error.localizedMessage
+                raise Exception(msg)
+            result = info.result
+            for file in result.file:
+                size = size + file.fileSize
+            return size
+        except Exception as ex:
+            raise ex
+
+    def get_config_info(self, filename):
+        mob = self.get_config_info_mob(filename)
+        return self.get_config(mob)
+
+    def get_config_info_mob_name(self, filename):
+        vm_name = os.path.basename(filename)
+        vm_name = vm_name.replace('.vmx', '')
+        return vm_name
+
+    def get_config_info_mob(self, filename):
+        vm = None
+        vm_name = self.get_config_info_mob_name(filename)
+        vm = self.get_vm(vm_name)
+        if not vm:
+            raise Exception('Invalid config path %s, VM %s not found.' % (filename, vm_name))
+        return vm
+
+    def get_virtual_hardware_devices(self, vm_name):
+        vm = self.get_vm(vm_name)
+        return vm.config.hardware.device
+
+    def get_virtual_disks(self, vm_name):
+        devices = self.get_virtual_hardware_devices(vm_name)
+        disk_devices = [d for d in devices if str(d.__class__.__name__) in ('VirtualDisk',)]
+        return disk_devices
+
+#################
+    def get_config_disks(self, vm):
+        if isinstance(vm, (str, unicode)):
+            vm = self.get_config_info_mob(vm)
+        if not isinstance(vm, VirtualMachine):
+            traceback.print_stack()
+            raise Exception('Type of object should be VirtualMachine. But got type:%s' % type(vm))
+        devices = vm.config.hardware.device
+        
+        disk_devices = [d for d in devices if str(d.__class__.__name__) in ('VirtualDisk',)]
+        cdrom_devices = [d for d in devices if str(d.__class__.__name__) in ('VirtualCdrom',)]
+        disks = []
+        for i,d in enumerate(disk_devices):
+            disk = DiskEntry(('file',str(d.backing.filename),'sd',chr(97+i)+'w'))
+            disks.append(disk)
+        i = i + 1
+        for j,d in enumerate(cdrom_devices):
+            disk = None
+            if d.backing.__class__.__name__ in ('VirtualCdromIsoBackingInfo',):
+                disk = DiskEntry(('file',str(d.backing.filename),'sd',chr(97+i+j)+':cdrom'+'w'))
+            else:
+                if d.backing.deviceName:
+                    disk = DiskEntry(('file',str(d.backing.deviceName),'sd',chr(97+i+j)+':cdrom'+'w'))
+            if disk:
+                disks.append(disk)
+                continue
+        return disks
+
+
+    def get_config(self, mob):
+        print '\n\n\n-------vvvvv---------\n\n\n'
+        vm_info = dynamic_map()
+        config = mob.config
+        vm_info.name = config.name
+        vm_info.mob_name = config.name
+        vm_info.uuid = config.instanceUuid
+        vm_info.memory = config.hardware.memoryMB
+        vm_info.vcpus = config.hardware.numCPU
+        vm_info.config_filename = config.files.vmPathName
+        vm_info.external_id = mob._mo_ref.value
+        vm_info.platform = 'vmw'
+        vm_info.on_reboot = config.defaultPowerOps.resetType
+        vm_info.on_shutdown = config.defaultPowerOps.powerOffType
+        vm_info.on_crash = config.defaultPowerOps.resetType
+        devices = config.hardware.device
+        vm_info.datacenter = None
+        dc_mob = self.get_config_datacenter(mob)
+        if dc_mob:
+            vm_info.datacenter = dc_mob.name
+        vm_info.vmfolder = None
+        vmfolder_mob = self.get_config_vmfolder(dc_mob)
+        if vmfolder_mob:
+            vm_info.vmfolder = vmfolder_mob.name
+        vm_info.host = None
+        host_mob = self.get_hs()
+        if host_mob:
+            vm_info.host = host_mob.name
+            
+        vm_info.disk = [str(disk) for disk in self.get_config_disks(mob)]
+        nw_devices =[n for n in devices if str(n.__class__.__name__) in ('VirtualE1000', 'VirtualVmxnet2', 'VirtualVmxnet3')]
+        vifs = []
+        for k,n in enumerate(nw_devices):
+            vif = 'mac=%s,bridge=%s' %(n.macAddress,n.backing.deviceName)
+            vifs.append(vif)
+        vm_info.vif = vifs
+        vm_info.os_name = config.guestFullName
+        vm_info.guestId = config.guestId
+        vm_info.os_version = config.version
+        return vm_info
+
+
+    def get_current_time(self):
+        return self.client.si.CurrentTime()
+
+    def get_power_state(self):
+        state = self._get_power_state()
+        msg = '\n\nPower State of %s node:%s is:%s \n\n' % (self.__class__.__name__, self.get_hs().name, state)
+        print msg
+        return state
+
+    def _get_power_state(self):
+        hs = self.get_hs()
+        hs.update(properties=['summary'])
+        state = hs.summary.runtime.powerState
+        print '=========state=============',
+        print state
+        if state in [self.DOWN, self.UNKNOWN]:
+            return self.DOWN
+        return self.UP
+
+    def get_config_datacenter(self, mob):
+        return None
+
+    def acquire_clone_ticket(self):
+        return self.client.si.content.sessionManager.AcquireCloneTicket()
+
+    def get_config_vmfolder(self, datacenter):
+        if datacenter:
+            return datacenter.vmFolder
+
+
+
+class vESXiNode(ESXiNode):
+    def get_connection(self):
+        vcenter_context = self.get_vCenterContext()
+        return vCenterConnectionCache.get_connection(vcenter_context)
+
+    def get_vCenterContext(self):
+        return self.external_manager
+
+    def cleanup(self):
+        pass
+
+    def get_hs(self):
+        if self._hs is None:
+            try:
+                 self._hs = HostSystem.all(self.client, name=self.hostname)
+
+            except ObjectNotFoundError as ex:
+                traceback.print_stack()
+                raise ObjectNotFoundError('Could not find HostSystem:%s. %s' % (self.hostname, to_str(ex)))
+
+        if self._hs is None:
+            raise Exception('ESXiNode Could not get host systemi %s from vCenter!' % self.hostname)
+        return self._hs
+
+
+    def get_config_datacenter(self, mob):
+        datacenter = mob.parent
+        while datacenter:
+            if datacenter.__class__.__name__ == 'Datacenter':
+                break
+            datacenter = datacenter.parent
+        return datacenter
+
+    def get_datacenters(self):
+        datacenters = Datacenter.all(self.client)
+        return datacenters
+
+    def get_datacenter(self, name):
+        try:
+            dc = Datacenter.get(self.client, name=name)
+        except ObjectNotFoundError as ex:
+            traceback.print_stack()
+            raise ObjectNotFoundError('Could not find Datacenter:%s. %s' % (name, to_str(ex)))
+        return dc
+
+    def get_root_folder(self):
+        print 'self.client.server: ',
+        print self.client.server
+        rootfolder = self.client.si.content.rootFolder
+        rootfolder.update(properties='childEntity')
+        return rootfolder
+
+    def get_host_by_name(self, hostname):
+        try:
+            print 'hostname: ',
+            print hostname
+            return HostSystem.get(self.client, name=hostname)
+        except ObjectNotFoundError as ex:
+            traceback.print_stack()
+            raise ObjectNotFoundError('Could not find HostSystem:%s. %s' % (hostname, to_str(ex)))
+
+    def get_power_state(self):
+        try:
+            state = self._get_power_state()
+            msg = '\n\nPower State of %s node:%s is:%s \n\n' % (self.__class__.__name__, self.get_hs().name, state)
+            print msg
+            return state
+        except urllib2.URLError as ex:
+            traceback.print_stack()
+            print '===ex1===v2===',
+            print ex
+            msg = 'vCenter Down. %s' % ex
+            raise VCenterDownError(msg)
+        except Exception as ex:
+            traceback.print_stack()
+            print '===ex2===v2===',
+            print ex
+            msg = 'vCenter Down. %s' % ex
+            raise VCenterDownError(msg)
+
+
+
+class vCenterConnectionCache():
+    _vc_connection_pool_lock = threading.RLock()
+    vc_connections = {}
+    @classmethod
+    def get_connection(cls, vcenter_context):
+        ctx = vcenter_context
+        key = cls.get_key(ctx)
+        conn = None
+        if cls.vc_connections.get(key):
+            conn = cls.vc_connections.get(key)
+            return conn
+        conn = cls._create_connection(vcenter_context)
+        cls._vc_connection_pool_lock.acquire()
+        try:
+            if cls.vc_connections.get(key) is None:
+                cls.vc_connections[key] = conn
+                print 'Adding to the vCenter cache'
+            else:
+                'Collision adding to vCenter cache, logging out'
+                conn.logout()
+              return cls.vc_connections[key]
+        finally:
+            cls._vc_connection_pool_lock.release()
+    @classmethod    
+    def _create_connection(cls,vcenter_context):
+        try:
+            ctx = vcenter_context
+            print 'VVVVVV creating vCenter Connection'
+            print ctx.hostname
+            print ctx.username
+            conn = Client(ctx.hostname,ctx.username,ctx.password)
+            print 'VVVVVV creating vCenter Connection Succesfull'
+            print ctx.hostname
+            print ctx.username
+            return conn
+        except urllib2.URLError,ex:
+            traceback.print_stack()
+            print '===ex1===v1===',ex
+            msg = 'vCenter Down. %s' %ex
+            raise VCenterDownError(msg)
+        except Exception,ex:
+            traceback.print_stack()
+            print '===ex2===v1===',ex
+            msg = 'vCenter Down. %s' %ex
+            raise VCenterDownError(msg)
+    @classmethod
+    def get_key(self, ctx):
+        return '%s:%s:%s' %(ctx.hostname,ctx.username.ctx.password)
+
+

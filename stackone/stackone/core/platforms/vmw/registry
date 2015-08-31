@@ -1,0 +1,15 @@
+#_config -- required for doing appropriate UI integration
+# web_config -- future.
+
+config = { 'platform_module': 'stackone.core.platforms.vmw.VMWPlatform',
+           'platform_class' : 'VMWPlatform',
+         }
+
+# helpers in client (js) for now.
+ui_config = { 'ui_helper_module' : 'stackone.client.VMWUI',
+              'ui_helper_class' : 'VMWUIHelper',
+            }
+
+web_config = { 'web_helper_module' : 'stackone.viewModel.VMWWebHelper',
+              'web_helper_class' : 'VMWWebHelper',
+            }

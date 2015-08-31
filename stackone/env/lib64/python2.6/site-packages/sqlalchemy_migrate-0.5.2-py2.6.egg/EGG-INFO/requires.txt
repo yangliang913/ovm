@@ -1,0 +1,7 @@
+sqlalchemy >= 0.5
+
+[docs]
+sphinx >= 0.5
+
+[testing]
+nose >= 0.10

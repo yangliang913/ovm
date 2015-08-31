@@ -1,0 +1,449 @@
+.x-tree-node img.generic_DATA_CENTER_icon, .x-tree-node-collapsed img.generic_DATA_CENTER_icon{
+    background: url("../icons/data-center.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.generic_DATA_CENTER_icon {
+    background: url("../icons/data-center.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.vcenter_DATA_CENTER_icon, .x-tree-node-collapsed img.vcenter_DATA_CENTER_icon{
+    background: url("../icons/vmw-datacenter.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.vcenter_DATA_CENTER_icon {
+    background: url("../icons/vmw-datacenter.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.IMAGE_STORE_icon, .x-tree-node-collapsed img.IMAGE_STORE_icon{
+    background: url("../icons/templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.IMAGE_STORE_icon {
+    background: url("../icons/templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_PROVIDER_FOLDER_icon, .x-tree-node-collapsed img.CLOUD_PROVIDER_FOLDER_icon{
+    background: url("../icons/Cloud2.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_PROVIDER_FOLDER_icon {
+    background: url("../icons/Cloud2.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_PROVIDER_EC2_icon, .x-tree-node-collapsed img.CLOUD_PROVIDER_EC2_icon{
+    background: url("../icons/Amazon-ec2.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_PROVIDER_EC2_icon {
+    background: url("../icons/Amazon-ec2.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_PROVIDER_CMS_icon, .x-tree-node-collapsed img.CLOUD_PROVIDER_CMS_icon{
+    background: url("../icons/cms_iaas.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_PROVIDER_CMS_icon {
+    background: url("../icons/cms_iaas.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_PROVIDER_EUC_icon, .x-tree-node-collapsed img.CLOUD_PROVIDER_EUC_icon{
+    background: url("../icons/Eucalyptus.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_PROVIDER_EUC_icon {
+    background: url("../icons/Eucalyptus.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_PROVIDER_OPENSTACK_icon, .x-tree-node-collapsed img.CLOUD_PROVIDER_OPENSTACK_icon{
+    background: url("../icons/openstack.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_PROVIDER_OPENSTACK_icon {
+    background: url("../icons/openstack.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.VDC_FOLDER_icon, .x-tree-node-collapsed img.VDC_FOLDER_icon{
+    background: url("../icons/VirtualDataCenters.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.VDC_FOLDER_icon {
+    background: url("../icons/VirtualDataCenters.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.VDC_icon, .x-tree-node-collapsed img.VDC_icon{
+    background: url("../icons/VirtualDataCenter.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.VDC_icon {
+    background: url("../icons/VirtualDataCenter.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.VDC_VM_FOLDER_icon, .x-tree-node-collapsed img.VDC_VM_FOLDER_icon{
+    background: url("../icons/vm_folder.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.VDC_VM_FOLDER_icon {
+    background: url("../icons/vm_folder.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.TMP_LIB_icon, .x-tree-node-collapsed img.TMP_LIB_icon{
+    background: url("../icons/templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.TMP_LIB_icon {
+    background: url("../icons/templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.CLOUD_TMPGRP_icon, .x-tree-node-collapsed img.CLOUD_TMPGRP_icon{
+    background: url("../icons/sub-templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_TMPGRP_icon {
+    background: url("../icons/sub-templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.CLOUD_TEMPLATE_icon {
+    background: url("../icons/sub-templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.CLOUD_TEMPLATE_icon, .x-tree-node-collapsed img.CLOUD_TEMPLATE_icon{
+    background: url("../icons/small_image.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.SERVER_POOL_icon,  .x-tree-node-collapsed img.SERVER_POOL_icon{
+    background: url("../icons/server-pool.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.SERVER_POOL_icon {
+    background: url("../icons/server-pool.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.iaas_SERVER_POOL_icon,  .x-tree-node-collapsed img.iaas_SERVER_POOL_icon{
+    background: url("../icons/iaas_server_pool.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.iaas_SERVER_POOL_icon {
+    background: url("../icons/iaas_server_pool.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.vmware_SERVER_POOL_icon,  .x-tree-node-collapsed img.vmware_SERVER_POOL_icon{
+    background: url("../icons/server-pool.png");
+    background-repeat:no-repeat  !important;
+    padding-right: 0px !important;
+    background-repeat: no-repeat !important;
+}
+
+.x-tree-node-expanded img.vmware_SERVER_POOL_icon {
+    background: url("../icons/server-pool.png");
+    background-repeat:no-repeat  !important;
+    padding-right: 0px !important;
+    background-repeat: no-repeat !important;
+}
+.x-tree-node img.xen_icon, .x-tree-node-collapsed img.xen_icon{
+    background: url("../icons/server.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.xen_icon {
+    background: url("../icons/server.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.vmw_icon, .x-tree-node-collapsed img.vmw_icon{
+    background: url("../icons/vmw.png");
+    background-repeat:no-repeat  !important;
+    padding-right: 0px !important;
+    background-repeat: no-repeat !important;
+}
+
+.x-tree-node-expanded img.vmw_icon {
+    background: url("../icons/vmw.png");
+    background-repeat:no-repeat  !important;
+    padding-right: 0px !important;
+    background-repeat: no-repeat !important;
+}
+.x-tree-node img.down_vmw_icon, .x-tree-node-collapsed img.down_vmw_icon{
+    background: url("../icons/down_vmw.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.down_vmw_icon {
+    background: url("../icons/down_vmw.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.vmw_maintenance_mode_icon, .x-tree-node-collapsed img.vmw_maintenance_mode_icon{
+    background: url("../icons/vmw_maintenance_mode.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.vmw_maintenance_mode_icon {
+    background: url("../icons/vmw_maintenance_mode.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.vmw_maintenance_mode_down_icon, .x-tree-node-collapsed img.vmw_maintenance_mode_down_icon{
+    background: url("../icons/vmw_maintenance_mode_down.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.vmw_maintenance_mode_down_icon {
+    background: url("../icons/vmw_maintenance_mode_down.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.kvm_icon, .x-tree-node-collapsed img.kvm_icon{
+    background: url("../icons/kvm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.kvm_icon {
+    background: url("../icons/kvm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.xen_down_icon, .x-tree-node-collapsed img.xen_down_icon{
+    background: url("../icons/down_xen.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.xen_down_icon {
+    background: url("../icons/down_xen.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}.x-tree-node img.kvm_down_icon, .x-tree-node-collapsed img.kvm_down_icon{
+    background: url("../icons/down_kvm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.kvm_down_icon {
+    background: url("../icons/down_kvm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+.x-tree-node img.DOMAIN_icon, .x-tree-node-collapsed img.DOMAIN_icon{
+    background: url("../icons/vm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.DOMAIN_icon{
+    background: url("../icons/vm.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.IMAGE_GROUP_icon, .x-tree-node-collapsed img.IMAGE_GROUP_icon{
+    background: url("../icons/sub-templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.IMAGE_GROUP_icon {
+    background: url("../icons/sub-templates.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.IMAGE_icon, .x-tree-node-collapsed img.IMAGE_icon{
+    background: url("../icons/small_image.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.IMAGE_icon {
+    background: url("../icons/small_image.png");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node img.loading_icon, .x-tree-node-collapsed img.loading_icon{
+    background: url("../icons/loading.gif");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}
+
+.x-tree-node-expanded img.loading_icon {
+    background: url("../icons/loading.gif");
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
+    margin: 0 !important;
+    background-repeat:no-repeat;
+}

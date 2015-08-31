@@ -1,0 +1,104 @@
+body { font-family: "Microsoft YaHei" !important; }
+body.no-support-wpf { font-family: SimSun; }
+
+#head-title {
+    background-color:#464646;
+    color:white;
+    /*font-weight:bold;*/
+    font-size:0.8em;
+    padding-top:-1px;
+}
+
+.x-panel-body {
+    background: #F4F4F4 !important;
+}
+
+.x-panel-body {
+    border: 0px solid #99BBE8;
+}
+
+#x-form-el-ldap_user {
+    padding-top:20px;
+}
+
+.x-form-item label {
+     padding-top:20px;
+}
+
+#username {
+    font-weight:bold;
+    font-size:1.4em;
+    padding-top:5px;
+    padding-bottom:2px;
+}
+
+#login {
+    width:19.6em;
+}
+
+#password-label {
+    font-weight:bold;
+    font-size:1.4em;
+    padding-top:5px;
+    padding-bottom:2px;
+}
+
+#password {
+     width:19.6em;
+}
+
+#hello-checkbox {
+    padding-top:10px;
+}
+
+#btn-submit {
+    margin-left:113px;
+}
+
+#btn-submit {
+    width:6em;
+    height:2em;
+}
+
+#stackone-title {
+    font-size:4em;
+	text-align:center;
+	margin-top:110px;
+}
+
+#ext-comp-1006 {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#ext-comp-1006 .x-window-ml {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-bl {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-bc {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-tl {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-tr {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-tc {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-mr {
+	background: transparent !important;
+}
+
+#ext-comp-1006 .x-window-br {
+	background: transparent !important;
+}

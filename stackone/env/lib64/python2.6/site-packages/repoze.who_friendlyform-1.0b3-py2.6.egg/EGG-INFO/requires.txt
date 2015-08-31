@@ -1,0 +1,2 @@
+repoze.who >= 1.0
+zope.interface

@@ -1,0 +1,9 @@
+# File containing registry for various platforms
+# Python  syntax
+platforms = { 'kvm': {'directory': 'kvm',
+                      'name' : 'KVM',
+                      'version_key' : 'version'
+                     }
+            }
+
+

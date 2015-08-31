@@ -1,0 +1,5 @@
+TurboGears2 >= 2.0.2
+sqlalchemy-migrate >= 0.5.1
+SQLAlchemy >= 0.5
+repoze.what-quickstart >= 1.0
+repoze.who >= 1.0.10

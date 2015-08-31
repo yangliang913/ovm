@@ -1,0 +1,480 @@
+.data-center-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+
+.data-center-starter-top-text {
+	width: 30%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.data-center-starter-top-img {
+	width: 70%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/datacenter.png');
+	background-repeat: no-repeat;
+	background-size: 560px 261px;;
+	background-position-x: right;
+}
+
+.data-center-starter-right-text {
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.data-center-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.server-pool-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.server-pool-starter-top-text {
+	width: 50%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.server-pool-starter-top-img {
+	width: 50%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/serverpool.png');
+	background-repeat: no-repeat;
+	background-size: 409px 280px;
+	background-position-x: right;
+}
+
+.server-pool-starter-right-text {
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.server-pool-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.managed-node-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.managed-node-starter-top-text {
+	width: 50%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.managed-node-starter-top-img {
+	width: 50%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/host.png');
+	background-repeat: no-repeat;
+	background-size: 465px 280px;
+	background-position-x: right;
+}
+
+.managed-node-starter-right-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.managed-node-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.vm-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.vm-starter-top-img {
+	width: 50%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/vm.png');
+	background-repeat: no-repeat;
+	background-size: 409px 280px;
+	background-position-x: right;
+}
+
+.vm-starter-top-text {
+	width: 50%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.vm-starter-right-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.vm-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-store-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.image-store-starter-top-img {
+	width: 70%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/imagestore.png');
+	background-repeat: no-repeat;
+	background-size: 540px 279px;
+	background-position-x: right;
+}
+
+.image-store-starter-top-text {
+	width: 30%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-store-starter-right-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-store-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-group-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.image-group-starter-top-img {
+	width: 50%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/imagegroup.png');
+	background-repeat: no-repeat;
+	background-size: 520px 283px;
+	background-position-x: right;
+}
+
+.image-group-starter-top-text {
+	width: 50%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-group-starter-right-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-group-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+
+.image-starter-top {
+	width: 100%;
+	height: 100%;
+}
+
+.image-starter-top-img {
+	width: 50%;
+	height: 100%;
+	float: right;
+	background: url('../images/starter/template.png');
+	background-repeat: no-repeat;
+	background-size: 313px 300px;
+	background-position-x: right;
+}
+
+.image-starter-top-text {
+	width: 50%;
+	height: 100%;
+	float: left;
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-starter-right-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+.image-starter-left-text {
+	font-size: 1.1em;
+	font-family: "Microsoft YaHei";
+}
+
+
+
+div.header-container {
+height: 33px !important;
+background-image: none !important;
+}
+
+div.header-left {
+margin: 0px 0px 0px 0px !important;
+}
+
+div.header-right-right {
+    width: auto !important;
+    height: auto !important;
+}
+
+#new-data-center-tbar {
+    display:inline;
+}
+
+/*.x-tab-strip span.x-tab-strip-text {
+    padding: 1px 0 !important;
+}
+
+.x-tab-strip-top .x-tab-strip-active .x-tab-right span.x-tab-strip-text {
+    padding-bottom: 2px !important;
+}*/
+
+.x-border-layout-ct {
+	background: none !important;
+}
+
+.x-tree-node-leaf .x-tree-node-icon {
+    background-image: url(../images/default/tree/leaf.gif);
+}
+
+/*原来的按钮*/
+.x-tree-node img.small_pool, .x-tree-node-collapsed img.small_pool{
+    background: url("../icons/small_pool.png");
+}
+
+.x-tree-node-expanded img.small_pool {
+    background: url("../icons/small_pool.png");
+}
+
+.x-tree-node img.group, .x-tree-node-collapsed img.group{
+    background: url("../icons/group.png");
+}
+
+.x-tree-node-expanded img.SERVER_POOL_icon {
+    background: url("../icons/server-pool.png");
+}
+
+.x-tree-node img.SERVER_POOL_icon, .x-tree-node-collapsed img.SERVER_POOL_icon {
+    background: url("../icons/server-pool.png");
+}
+
+.x-tree-node-expanded img.IMAGE_GROUP_icon {
+    background: url("../icons/sub-templates.png");
+}
+
+.x-tree-node-expanded img.group {
+    background: url("../icons/group.png");
+}
+
+.x-tree-node img.small_image, .x-tree-node-collapsed img.small_image{
+    background: url("../icons/small_image.png");
+}
+
+.x-tree-node-expanded img.small_image {
+    background: url("../icons/small_image.png");
+}
+
+.x-tree-node img.small_image_store, .x-tree-node-collapsed img.small_image_store{
+    background: url("../icons/small_image_store.png");
+}
+
+.x-tree-node-expanded img.small_image_store {
+    background: url("../icons/small_image_store.png");
+}
+
+.x-tree-node img.xen, .x-tree-node-collapsed img.xen{
+    background: url("../icons/xen.png");
+}
+
+.x-tree-node-expanded img.xen {
+    background: url("../icons/xen.png");
+}
+
+.x-tree-node-expanded img.kvm_icon {
+    background: url("../icons/kvm.png");
+}
+
+.x-tree-node img.kvm_icon, .x-tree-node-collapsed img.kvm_icon {
+    background: url("../icons/kvm.png");
+}
+
+.x-tree-node img.vm, .x-tree-node-collapsed img.vm{
+    background: url("../icons/vm.png");
+}
+
+.x-tree-node-expanded img.vm {
+    background: url("../icons/vm.png");
+}
+
+.x-tree-node img.IMAGE_GROUP_icon, .x-tree-node-collapsed img.IMAGE_GROUP_icon{
+    background: url("../icons/small_image_store.png");
+}
+
+.x-tree-node-expanded img.IMAGE_GROUP_icon {
+    background: url("../icons/small_image_store.png");
+}
+
+.x-tree-node img.IMAGE_icon, .x-tree-node-collapsed img.IMAGE_icon{
+    background: url("../icons/small_image.png");
+}
+
+.x-tree-node-expanded img.IMAGE_icon {
+    background: url("../icons/small_image.png");
+}
+
+.x-tree-node img.MANAGED_NODE_icon, .x-tree-node-collapsed img.MANAGED_NODE_icon{
+    background: url("../icons/xen.png");
+}
+
+.x-tree-node-expanded img.MANAGED_NODE_icon {
+    background: url("../icons/xen.png");
+}
+
+.x-tree-node img.VM_icon, .x-tree-node-collapsed img.VM_icon{
+    background: url("../icons/vm.png");
+}
+
+.x-tree-node-expanded img.VM_icon {
+    background: url("../icons/vm.png");
+}
+
+.x-tree-node img.runningvm_icon, .x-tree-node-collapsed img.runningvm_icon{
+    background: url("../icons/small_started_state.png");
+}
+
+.x-tree-node-expanded img.runningvm_icon {
+    background: url("../icons/small_started_state.png");
+    
+}
+
+.x-tree-node img.pausedvm_icon, .x-tree-node-collapsed img.pausedvm_icon{
+    background: url("../icons/small_pause.png");
+    
+}
+
+.x-tree-node-expanded img.pausedvm_icon {
+    background: url("../icons/small_pause.png");
+    
+}
+
+.x-tree-node img.stoppedvm_icon, .x-tree-node-collapsed img.stoppedvm_icon{
+    background: url("../icons/small_shutdown.png");
+    
+}
+
+.x-tree-node-expanded img.stoppedvm_icon {
+    background: url("../icons/small_shutdown.png");
+    
+}
+.x-tree-node img.down_stoppedvm_icon, .x-tree-node-collapsed img.down_stoppedvm_icon{
+    background: url("../icons/small_shutdown_down.png");
+    
+}
+.x-tree-node-expanded img.down_stoppedvm_icon {
+    background: url("../icons/small_shutdown_down.png");
+    
+}
+.x-tree-node img.down_pausedvm_icon, .x-tree-node-collapsed img.down_pausedvm_icon{
+    background: url("../icons/small_pause_down.png");
+    
+}
+.x-tree-node-expanded img.down_pausedvm_icon {
+    background: url("../icons/small_pause_down.png");
+    
+}
+.x-tree-node img.down_runningvm_icon, .x-tree-node-collapsed img.down_runningvm_icon{
+    background: url("../icons/small_started_state_down.png");
+    
+}
+.x-tree-node-expanded img.down_runningvm_icon {
+    background: url("../icons/small_started_state_down.png");
+}
+
+
+body { font-family: "Microsoft YaHei"; }
+body.no-support-wpf { font-family: SimSun; }
+
+
+#vminfo .x-panel-noborder .x-panel-body-noborder {
+    padding-top:0px !important;
+}
+
+#outerPanel .header-right-right a  {
+    text-decoration:none;
+}
+
+
+#borderPanel #ext-gen23 {
+	border:none !important;
+}
+
+#westPanel {
+	border-style: solid;
+	/*border-color: #99BBE8;*/
+	border-width: 1px;
+}
+
+#southPanel {
+	border-style: solid;
+	/*border-color: #99BBE8;*/
+	border-width: 1px;
+}
+
+#ext-gen96 {
+	border-top:0px;
+	border:none;
+}
+
+#new-template-tbar {
+	display:inline;
+}
+
+
+.tap-header-style {
+	font-size:12px !important;
+}
+
+.admin-nav-menu a {
+    color: gray;    
+}
+
+.admin-nav-menu a:hover {
+    color: red;    
+}
+
+.x-tree-node .x-tree-selected {
+    background-color: #BBB;
+}
+

@@ -1,0 +1,8 @@
+my_platform = 'vmw'
+key_version = 'version'
+display_version = 'Version'
+CONNECTED = 'connected'
+DISCONNECTED = 'disconnected'
+INACCESSIBLE = 'inaccessible'
+INVALID = 'invalid'
+ORPHANED = 'orphaned'

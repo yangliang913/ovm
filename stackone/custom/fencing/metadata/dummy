@@ -1,0 +1,20 @@
+name='test'
+#display_name='Test Fencing'
+display_name='Dummy Fence Device'
+#cmd is the actual command being executed for fencing
+cmd='python test_fence'
+filename='test_fence'
+#location is convirt_home/custom/fencing/scripts
+#put the scripts there
+#location='convirt_home/custom/fencing/scripts/'
+classification='Other'
+description='Dummy Fence Device Description'
+#componenttype determines the ui component shown in the ui
+#supported componenttypes are textfield,filebrowser,passwordfield
+#datatype is used for validation 
+#supported datatypes are integer & text. giving "" will avoid validation.
+#
+device_attrs=[ {'name':'delay','componenttype':'textfield','datatype':'integer','display_name':'Delay'} ]
+instance_attrs=[ {'name':'success','componenttype':'textfield','datatype':'integer','display_name':'Return Value'} ]
+#environ_attrs=[ {'name':'test','componenttype':'textfield','datatype':'text','display_name':'Test '} ]
+

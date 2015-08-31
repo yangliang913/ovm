@@ -1,0 +1,5 @@
+repoze.what >= 1.0.3
+repoze.who
+repoze.who.plugins.sa >= 1.0rc1
+repoze.what.plugins.sql >= 1.0rc1
+repoze.who-friendlyform

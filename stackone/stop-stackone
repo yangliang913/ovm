@@ -1,0 +1,5 @@
+#!/bin/bash
+
+source env/bin/activate
+paster serve development.ini --stop
+deactivate
